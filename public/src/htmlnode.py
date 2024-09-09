@@ -38,12 +38,13 @@ class LeafNode(HTMLNode):
         self.props = props
 
     def to_html(self):
-        #if self.value is None then raise ValueError
-        #if self.tag is None then return value raw text
-        #render html tag
-        #LeafNode("p", "This is a paragraph of text.") -> <p>This is a paragraph of text.</p>
-        #LeafNode("a", "Click me!", {"href": "https://www.google.com"}) -> <a href="https://www.google.com">Click me!</a>
-
+        """        
+        if self.value is None then raise ValueError
+        if self.tag is None then return value raw text
+        render html tag
+        LeafNode("p", "This is a paragraph of text.") -> <p>This is a paragraph of text.</p>
+        LeafNode("a", "Click me!", {"href": "https://www.google.com"}) -> <a href="https://www.google.com">Click me!</a>
+        """
         if self.value is None:
             raise ValueError("All leafnodes must have a value")
         if self.tag is None:

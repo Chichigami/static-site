@@ -1,6 +1,6 @@
 import unittest
 
-from node_conversions import text_node_to_html_node
+from node_conversions import *
 from textnode import *
 from htmlnode import LeafNode
 
@@ -51,5 +51,15 @@ class TestNodeConversion(unittest.TestCase):
         expected = LeafNode("img", "", {"src": "https://www.someurl.com/", "alt": "foo"})
         self.assertEqual(actual, expected)
 
+class TestSplitTextNode(unittest.TestCase):
+    def test_default(self):
+        node = TextNode("This is text with a `code block` word", text_type_text)
+        actual = split_nodes_delimiter([node], "`", text_type_code)
+        expected = [
+                    TextNode("This is text with a ", text_type_text),
+                    TextNode("code block", text_type_code),
+                    TextNode(" word", text_type_text),
+                    ]
+        self.assertEqual(actual, expected)
 if __name__ == "__main__":
     unittest.main()
