@@ -1,2 +1,4 @@
 public/src/__pycache__/
 .vscode
+.venv/
+env
