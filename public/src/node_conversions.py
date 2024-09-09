@@ -1,5 +1,5 @@
-from textnode import TextNode
-from htmlnode import LeafNode
+from textnode import *
+from htmlnode import *
 
 def text_node_to_html_node(text_node: TextNode) -> LeafNode:
 
@@ -22,6 +22,7 @@ def text_node_to_html_node(text_node: TextNode) -> LeafNode:
         case "link":
             return LeafNode("a", text_node.text, {"href": text_node.url})
         case "image":
-            return LeafNode("img", "" , {"src":text_node.url, "alt":text_node.text})
+            return LeafNode("img", "" , {"src": text_node.url, "alt": text_node.text})
         case _:
             raise Exception("text_node_text_type doesn't match")
+    

@@ -18,8 +18,15 @@ class HTMLNode():
             result += f'{key}="{value}" '
         return result.rstrip(' ')
     
-    def __repr__(self):
-        return f"HTMLNode({self.tag}, {self.value}, {self.children}, {self.props})"
+    def __eq__(self, other: Self) -> bool:
+        return (isinstance(self, type(other))
+                and self.tag == other.tag 
+                and self.value == other.value 
+                and self.children == other.children 
+                and self.props == other.props)
+    
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self.tag}, {self.value}, {self.children}, {self.props})"
 
 class LeafNode(HTMLNode):
     #A leafnode is a type of HTMLNode that represents a single HTML tag with no children
@@ -45,10 +52,10 @@ class LeafNode(HTMLNode):
         if self.props is None:
             return f'<{self.tag}>{self.value}</{self.tag}>'
         return f'<{self.tag} {super().props_to_html()}>{self.value}</{self.tag}>'
-
-    def __repr__(self):
-        return super().__repr__()
     
+    def __eq__(self, other: Self) -> bool:
+        return super().__eq__(other)
+
 class ParentNode(HTMLNode):
     #child of HTMLNode class
     #no value
@@ -76,3 +83,4 @@ class ParentNode(HTMLNode):
             return f'<{self.tag}>{child_string}</{self.tag}>'
         else:
             return f'<{self.tag} {self.props_to_html()}>{child_string}</{self.tag}>'
+        

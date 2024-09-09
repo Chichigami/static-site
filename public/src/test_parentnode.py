@@ -59,9 +59,8 @@ class TestLeafNode(unittest.TestCase):
             node.to_html()
     
     def test_empty_children(self):
-        node = ParentNode("p", LeafNode(), )
         with self.assertRaises(TypeError):
-            node.to_html()
+            ParentNode("p", LeafNode(),)
 
 
     def test_no_tag(self):
