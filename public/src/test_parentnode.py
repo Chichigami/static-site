@@ -59,7 +59,7 @@ class TestLeafNode(unittest.TestCase):
             node.to_html()
     
     def test_empty_children(self):
-        with self.assertRaises(TypeError):
+        with self.assertRaises(TypeError): 
             ParentNode("p", LeafNode(),)
 
 
