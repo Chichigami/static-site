@@ -43,6 +43,14 @@ def split_nodes_delimiter(old_nodes: List[TextNode], delimiter: str, text_type) 
     list_of_textnodes = []
     temp = ""
     for node in old_nodes:
-        temp = node.text.split(delimiter)
-    
+        if node.text_type != text_type_text:
+            list_of_textnodes.extend(node)
+        else:
+            temp = node.text.split(delimiter)
+            for i in range(0, len(temp)):
+                if i % 2 == 0:
+                    list_of_textnodes.append(TextNode(temp[i], text_type_text))
+                else:
+                    list_of_textnodes.append(TextNode(temp[i], text_type))
+               
     return list_of_textnodes

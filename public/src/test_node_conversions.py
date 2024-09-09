@@ -61,5 +61,30 @@ class TestSplitTextNode(unittest.TestCase):
                     TextNode(" word", text_type_text),
                     ]
         self.assertEqual(actual, expected)
+
+    def test_default_back_to_back(self):
+        node = TextNode("This is text with a `code block``code block2` word", text_type_text)
+        actual = split_nodes_delimiter([node], "`", text_type_code)
+        expected = [
+                    TextNode("This is text with a ", text_type_text),
+                    TextNode("code block", text_type_code),
+                    TextNode("", text_type_text),
+                    TextNode("code block2", text_type_code),
+                    TextNode(" word", text_type_text),
+                    ]
+        self.assertEqual(actual, expected)
+
+    def test_default_every_other(self):
+        node = TextNode("foo `code block` bar `code block2` foobar", text_type_text)
+        actual = split_nodes_delimiter([node], "`", text_type_code)
+        expected = [
+                    TextNode("foo ", text_type_text),
+                    TextNode("code block", text_type_code),
+                    TextNode(" bar ", text_type_text),
+                    TextNode("code block2", text_type_code),
+                    TextNode(" foobar", text_type_text),
+                    ]
+        self.assertEqual(actual, expected)
+
 if __name__ == "__main__":
     unittest.main()
