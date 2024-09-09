@@ -21,6 +21,11 @@ class TestHTMLNode(unittest.TestCase):
         expected = "HTMLNode(tag, value, HTMLNode(a, this has a href, None, {'href': 'https://www.someurl.com/', 'target': 'hello world'}), {'href': 'https://www.google.com', 'target': '_blank'})"
         actual = repr(node)
         self.assertEqual(actual, expected)
+
+    def test_to_html(self):
+        node = HTMLNode()
+        with self.assertRaises(NotImplementedError):
+            node.to_html()
     
 
 if __name__ == "__main__":
