@@ -10,4 +10,6 @@ class TextNode():
         return self.text is other.text and self.text_type is other.text_type and self.url is other.url
 
     def __repr__(self) -> str:
-        return f"TextNode({self.text}, {self.text_type}, {self.url})"   
+        return f"TextNode({self.text}, {self.text_type}, {self.url})"
+    
+    
