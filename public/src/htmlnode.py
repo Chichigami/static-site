@@ -10,8 +10,8 @@ class HTMLNode():
     def to_html(self):
         raise NotImplementedError
     
-    def props_to_html(self):
-        if self.props == None:
+    def props_to_html(self) -> str:
+        if self.props is None:
             return None
         result = ""
         for key, value in self.props.items():
