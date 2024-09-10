@@ -1,6 +1,9 @@
+import re
+
 from textnode import *
 from htmlnode import *
 from typing import List
+
 
 def text_node_to_html_node(text_node: TextNode) -> LeafNode:
     """
@@ -53,3 +56,17 @@ def split_nodes_delimiter(old_nodes: List[TextNode], delimiter: str, text_type) 
                     list_of_textnodes.append(TextNode(temp[i], text_type))
                
     return list_of_textnodes
+
+def extract_markdown_images(text: str) -> List[tuple]:
+    """
+    "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
+    [("rick roll", "https://i.imgur.com/aKaOqIh.gif"), ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")]
+    """
+    return re.findall(r"!\[(.*?)\]\((.*?)\)", text)
+
+def extract_markdown_links(text: str) -> List[tuple]:
+    """
+    "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
+    [("to boot dev", "https://www.boot.dev"), ("to youtube", "https://www.youtube.com/@bootdotdev")]
+    """
+    return re.findall(r"(?<!!)\[(.*?)\]\((.*?)\)", text)
