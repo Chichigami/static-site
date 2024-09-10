@@ -41,7 +41,6 @@ def split_nodes_delimiter(old_nodes: List[TextNode], delimiter: str, text_type) 
     if no closing delimiter then raise exception
     """
     list_of_textnodes = []
-    temp = ""
     for node in old_nodes:
         if node.text_type != text_type_text:
             list_of_textnodes.extend(node)

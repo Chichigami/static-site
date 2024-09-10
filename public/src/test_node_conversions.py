@@ -86,5 +86,23 @@ class TestSplitTextNode(unittest.TestCase):
                     ]
         self.assertEqual(actual, expected)
 
+    def test_default_with_bold(self):
+        node = TextNode("foo `code block` bar **bold** foobar", text_type_text)
+        actual = split_nodes_delimiter([node], "`", text_type_code)
+        expected = [
+                    TextNode("foo ", text_type_text),
+                    TextNode("code block", text_type_code),
+                    TextNode(" bar **bold** foobar", text_type_text),
+                    ]
+        self.assertEqual(actual, expected)
+
+    def test_plain(self):
+        node = TextNode("This is text with a word", text_type_text)
+        actual = split_nodes_delimiter([node], "`", text_type_code)
+        expected = [
+                    TextNode("This is text with a word", text_type_text),
+                    ]
+        self.assertEqual(actual, expected)
+
 if __name__ == "__main__":
     unittest.main()
