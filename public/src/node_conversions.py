@@ -70,3 +70,29 @@ def extract_markdown_links(text: str) -> List[tuple]:
     [("to boot dev", "https://www.boot.dev"), ("to youtube", "https://www.youtube.com/@bootdotdev")]
     """
     return re.findall(r"(?<!!)\[(.*?)\]\((.*?)\)", text)
+
+def split_nodes_image(old_nodes: List[TextNode]) -> List[TextNode]:
+    """
+    Args: List of TextNodes
+    TextNode("This is text with a link ![to boot dev](https://www.boot.dev) and ![to youtube](https://www.youtube.com/@bootdotdev)", text_type_text,)
+    Return: List of TextNodes
+    [
+    TextNode("This is text with a link ", text_type_text),
+    TextNode("to boot dev", text_type_link, "https://www.boot.dev"),
+    TextNode(" and ", text_type_text),
+    TextNode("to youtube", text_type_link, "https://www.youtube.com/@bootdotdev"),
+    ]
+    """
+    list_of_textnodes = []
+    for node in old_nodes:
+        list_of_tuples = extract_markdown_images(node.text)
+        other_stuff = re.replace(r"!\[(.*?)\]\((.*?)\)", node.text)
+        print(other_stuff)
+    return list_of_textnodes
+
+def split_nodes_link(old_nodes: TextNode) -> List[TextNode]:
+    """
+    Args: List of TextNodes
+    Return: List of Textnodes
+    """
+    return

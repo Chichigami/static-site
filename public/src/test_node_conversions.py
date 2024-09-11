@@ -104,5 +104,30 @@ class TestSplitTextNode(unittest.TestCase):
                     ]
         self.assertEqual(actual, expected)
 
+# class TestSplitTextNodeLinks(unittest.TestCase):
+#     def test_default(self):
+#         node = TextNode("This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)", text_type_text,)
+#         actual = split_nodes_link(node)
+#         expected = [
+#                     TextNode("This is text with a link ", text_type_text),
+#                     TextNode("to boot dev", text_type_link, "https://www.boot.dev"),
+#                     TextNode(" and ", text_type_text),
+#                     TextNode("to youtube", text_type_link, "https://www.youtube.com/@bootdotdev"),
+#                     ]
+#         self.assertEqual(actual, expected)
+
+class TestSplitTextNodeImages(unittest.TestCase):
+    def test_default(self):
+        node = TextNode("This is text with a link ![to boot dev](https://www.boot.dev) and ![to youtube](https://www.youtube.com/@bootdotdev)", text_type_text,)
+        actual = split_nodes_image([node])
+        expected = [
+                    TextNode("This is text with a link ", text_type_text),
+                    TextNode("to boot dev", text_type_link, "https://www.boot.dev"),
+                    TextNode(" and ", text_type_text),
+                    TextNode("to youtube", text_type_link, "https://www.youtube.com/@bootdotdev"),
+                    ]
+        self.assertEqual(actual, expected)
+        self.assertEqual(actual, expected)
+
 if __name__ == "__main__":
     unittest.main()
