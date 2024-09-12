@@ -2,8 +2,12 @@ from node_conversions import *
 
 
 def main():
-    test = extract_markdown_links("This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)")
-    print(test)
+    text = "# This is a heading\n\n" \
+    "This is a paragraph of text. It has some **bold** and *italic* words inside of it.\n\n" \
+    "* This is the first list item in a list block\n" \
+    "* This is a list item\n" \
+    "* This is another list item"
+    print(text)
 
 if __name__ == "__main__":
     main()

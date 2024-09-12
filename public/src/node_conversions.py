@@ -46,7 +46,7 @@ def split_nodes_delimiter(old_nodes: List[TextNode], delimiter: str, text_type) 
     list_of_textnodes = []
     for node in old_nodes:
         if node.text_type != text_type_text:
-            list_of_textnodes.extend(node)
+            list_of_textnodes.append(node)
         else:
             temp = node.text.split(delimiter)
             for i in range(0, len(temp)):
@@ -92,7 +92,8 @@ def split_nodes_image(old_nodes: List[TextNode]) -> List[TextNode]:
                 list_of_textnodes.append(TextNode(splitted[0], text_type_text))
                 list_of_textnodes.append(TextNode(image_alt, text_type_image, image_link))
                 temp_text = splitted[1]
-            list_of_textnodes.append(TextNode(splitted[1], text_type_text))
+            if splitted[1] != '':
+                list_of_textnodes.append(TextNode(splitted[1], text_type_text))
     return list_of_textnodes
 
 def split_nodes_link(old_nodes: List[TextNode]) -> List[TextNode]:
@@ -111,9 +112,10 @@ def split_nodes_link(old_nodes: List[TextNode]) -> List[TextNode]:
                 hyper_text, hyper_link = list_of_tuples[i][0], list_of_tuples[i][1]
                 splitted = temp_text.split(f"[{hyper_text}]({hyper_link})", 1)
                 list_of_textnodes.append(TextNode(splitted[0], text_type_text))
-                list_of_textnodes.append(TextNode(hyper_text, text_type_image, hyper_link))
+                list_of_textnodes.append(TextNode(hyper_text, text_type_link, hyper_link))
                 temp_text = splitted[1]
-            list_of_textnodes.append(TextNode(splitted[1], text_type_text))
+            if splitted[1] != '':
+                list_of_textnodes.append(TextNode(splitted[1], text_type_text))
     return list_of_textnodes
 
 def text_to_textnodes(text: str) -> List[TextNode]:
@@ -122,8 +124,14 @@ def text_to_textnodes(text: str) -> List[TextNode]:
     Combine all the split functions into one. This will split a bunch of markdown text
     return: a list of textnodes
     """
-    node = TextNode(text, text_type_text)
-    list_of_textnodes = split_nodes_image([node])
-    list_of_textnodes = split_nodes_link(list_of_textnodes)
-    list_of_textnodes = split_nodes_delimiter(list_of_textnodes, '**', text_type_bold)
-    return list_of_textnodes
+    list_of_nodes = [TextNode(text, text_type_text)]
+    if extract_markdown_images(text):
+        list_of_nodes = split_nodes_image(list_of_nodes)
+    if extract_markdown_links(text):
+        list_of_nodes = split_nodes_link(list_of_nodes)
+
+    list_of_nodes = split_nodes_delimiter(list_of_nodes, "**", text_type_bold)
+    list_of_nodes = split_nodes_delimiter(list_of_nodes, "*", text_type_italic)
+    list_of_nodes = split_nodes_delimiter(list_of_nodes, "`", text_type_code)
+
+    return list_of_nodes

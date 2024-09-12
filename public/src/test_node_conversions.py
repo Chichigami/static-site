@@ -143,19 +143,6 @@ class TestRegexExtractionImages(unittest.TestCase):
         expected = [("rick roll", "https://i.imgur.com/aKaOqIh.gif"), ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")]
         self.assertEqual(actual, expected)
 
-
-# class TestSplitTextNodeLinks(unittest.TestCase):
-#     def test_default(self):
-#         node = TextNode("This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)", text_type_text,)
-#         actual = split_nodes_link(node)
-#         expected = [
-#                     TextNode("This is text with a link ", text_type_text),
-#                     TextNode("to boot dev", text_type_link, "https://www.boot.dev"),
-#                     TextNode(" and ", text_type_text),
-#                     TextNode("to youtube", text_type_link, "https://www.youtube.com/@bootdotdev"),
-#                     ]
-#         self.assertEqual(actual, expected)
-
 class TestSplitTextNodeImages(unittest.TestCase):
     def test_default(self):
         node = TextNode("First ![to boot dev](https://www.boot.dev) Middle ![to youtube](https://www.youtube.com/@bootdotdev) End", text_type_text,)
@@ -196,9 +183,9 @@ class TestSplitTextNodeLinks(unittest.TestCase):
         actual = split_nodes_link([node])
         expected = [
                     TextNode("First ", text_type_text),
-                    TextNode("to boot dev", text_type_image, "https://www.boot.dev"),
+                    TextNode("to boot dev", text_type_link, "https://www.boot.dev"),
                     TextNode(" Middle ", text_type_text),
-                    TextNode("to youtube", text_type_image, "https://www.youtube.com/@bootdotdev"),
+                    TextNode("to youtube", text_type_link, "https://www.youtube.com/@bootdotdev"),
                     TextNode(" End", text_type_text),
                     ]
         self.assertEqual(actual, expected)
@@ -209,12 +196,12 @@ class TestSplitTextNodeLinks(unittest.TestCase):
         actual = split_nodes_link([node])
         expected = [
             TextNode("Foo1 Foo2 ", text_type_text),
-            TextNode("alt1", text_type_image, "link1"),
+            TextNode("alt1", text_type_link, "link1"),
             TextNode(" Bar1 Bar2 ", text_type_text),
-            TextNode("alt2", text_type_image, "link2"),
+            TextNode("alt2", text_type_link, "link2"),
             TextNode(" Foo Bar3 Foo Bar3 ", text_type_text),
-            TextNode("alt3", text_type_image, "link3"),
-            TextNode(" FooBar", text_type_text)
+            TextNode("alt3", text_type_link, "link3"),
+            TextNode(" FooBar", text_type_text),
         ]
         self.assertEqual(actual, expected)
 
@@ -242,6 +229,8 @@ class TestUltimateSplit(unittest.TestCase):
             TextNode("link", text_type_link, "https://boot.dev"),
         ]
         self.assertEqual(actual, expected)
+
+
 
 if __name__ == "__main__":
     unittest.main()
