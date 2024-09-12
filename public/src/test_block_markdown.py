@@ -30,6 +30,12 @@ class TestSplitBlockMarkdown(unittest.TestCase):
                     '* This is the first list item in a list block\n   * This is a list item\n* This is another list item']
         self.assertEqual(actual, expected)
 
+class TestBlockIdentifier(unittest.TestCase):
+    def test_default(self):
+        text = '* This is the first list item in a list block\n   * This is a list item\n* This is another list item'
+        actual = block_to_block_type(text)
+        expected = 'unordered_list'
+        self.assertEqual(actual, expected)
 
 if __name__ == "__main__":
     unittest.main()
