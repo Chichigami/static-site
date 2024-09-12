@@ -156,18 +156,92 @@ class TestRegexExtractionImages(unittest.TestCase):
 #                     ]
 #         self.assertEqual(actual, expected)
 
-# class TestSplitTextNodeImages(unittest.TestCase):
-#     def test_default(self):
-#         node = TextNode("This is text with a link ![to boot dev](https://www.boot.dev) and ![to youtube](https://www.youtube.com/@bootdotdev)", text_type_text,)
-#         actual = split_nodes_image([node])
-#         expected = [
-#                     TextNode("This is text with a link ", text_type_text),
-#                     TextNode("to boot dev", text_type_link, "https://www.boot.dev"),
-#                     TextNode(" and ", text_type_text),
-#                     TextNode("to youtube", text_type_link, "https://www.youtube.com/@bootdotdev"),
-#                     ]
-#         self.assertEqual(actual, expected)
-#         self.assertEqual(actual, expected)
+class TestSplitTextNodeImages(unittest.TestCase):
+    def test_default(self):
+        node = TextNode("First ![to boot dev](https://www.boot.dev) Middle ![to youtube](https://www.youtube.com/@bootdotdev) End", text_type_text,)
+        actual = split_nodes_image([node])
+        expected = [
+                    TextNode("First ", text_type_text),
+                    TextNode("to boot dev", text_type_image, "https://www.boot.dev"),
+                    TextNode(" Middle ", text_type_text),
+                    TextNode("to youtube", text_type_image, "https://www.youtube.com/@bootdotdev"),
+                    TextNode(" End", text_type_text),
+                    ]
+        self.assertEqual(actual, expected)
+
+    def test_more_text(self):
+        text = "Foo1 Foo2 ![alt1](link1) Bar1 Bar2 ![alt2](link2) Foo Bar3 Foo Bar3 ![alt3](link3) FooBar"
+        node = TextNode(text, text_type_text)
+        actual = split_nodes_image([node])
+        expected = [
+            TextNode("Foo1 Foo2 ", text_type_text),
+            TextNode("alt1", text_type_image, "link1"),
+            TextNode(" Bar1 Bar2 ", text_type_text),
+            TextNode("alt2", text_type_image, "link2"),
+            TextNode(" Foo Bar3 Foo Bar3 ", text_type_text),
+            TextNode("alt3", text_type_image, "link3"),
+            TextNode(" FooBar", text_type_text)
+        ]
+        self.assertEqual(actual, expected)
+
+
+    def test_no_image(self):
+        node = TextNode("First Middle End", text_type_text,)
+        actual = split_nodes_image([node])
+        expected = [node]
+        self.assertEqual(actual, expected)
+class TestSplitTextNodeLinks(unittest.TestCase):
+    def test_default(self):
+        node = TextNode("First [to boot dev](https://www.boot.dev) Middle [to youtube](https://www.youtube.com/@bootdotdev) End", text_type_text,)
+        actual = split_nodes_link([node])
+        expected = [
+                    TextNode("First ", text_type_text),
+                    TextNode("to boot dev", text_type_image, "https://www.boot.dev"),
+                    TextNode(" Middle ", text_type_text),
+                    TextNode("to youtube", text_type_image, "https://www.youtube.com/@bootdotdev"),
+                    TextNode(" End", text_type_text),
+                    ]
+        self.assertEqual(actual, expected)
+
+    def test_more_links(self):
+        text = "Foo1 Foo2 [alt1](link1) Bar1 Bar2 [alt2](link2) Foo Bar3 Foo Bar3 [alt3](link3) FooBar"
+        node = TextNode(text, text_type_text)
+        actual = split_nodes_link([node])
+        expected = [
+            TextNode("Foo1 Foo2 ", text_type_text),
+            TextNode("alt1", text_type_image, "link1"),
+            TextNode(" Bar1 Bar2 ", text_type_text),
+            TextNode("alt2", text_type_image, "link2"),
+            TextNode(" Foo Bar3 Foo Bar3 ", text_type_text),
+            TextNode("alt3", text_type_image, "link3"),
+            TextNode(" FooBar", text_type_text)
+        ]
+        self.assertEqual(actual, expected)
+
+
+    def test_no_link(self):
+        node = TextNode("First Middle End", text_type_text,)
+        actual = split_nodes_link([node])
+        expected = [node]
+        self.assertEqual(actual, expected)
+
+class TestUltimateSplit(unittest.TestCase):
+    def test_default(self):
+        text = "This is **text** with an *italic* word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        actual = text_to_textnodes(text)
+        expected = [
+            TextNode("This is ", text_type_text),
+            TextNode("text", text_type_bold),
+            TextNode(" with an ", text_type_text),
+            TextNode("italic", text_type_italic),
+            TextNode(" word and a ", text_type_text),
+            TextNode("code block", text_type_code),
+            TextNode(" and an ", text_type_text),
+            TextNode("obi wan image", text_type_image, "https://i.imgur.com/fJRm4Vk.jpeg"),
+            TextNode(" and a ", text_type_text),
+            TextNode("link", text_type_link, "https://boot.dev"),
+        ]
+        self.assertEqual(actual, expected)
 
 if __name__ == "__main__":
     unittest.main()

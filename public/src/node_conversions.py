@@ -75,26 +75,55 @@ def extract_markdown_links(text: str) -> List[tuple]:
 
 def split_nodes_image(old_nodes: List[TextNode]) -> List[TextNode]:
     """
-    Args: List of TextNodes
-    TextNode("This is text with a link ![to boot dev](https://www.boot.dev) and ![to youtube](https://www.youtube.com/@bootdotdev)", text_type_text,)
-    Return: List of TextNodes
-    [
-    TextNode("This is text with a link ", text_type_text),
-    TextNode("to boot dev", text_type_link, "https://www.boot.dev"),
-    TextNode(" and ", text_type_text),
-    TextNode("to youtube", text_type_link, "https://www.youtube.com/@bootdotdev"),
+    Args: List of TextNodes with image alt and links
+    return: List of TextNodes
     ]
     """
     list_of_textnodes = []
     for node in old_nodes:
         list_of_tuples = extract_markdown_images(node.text)
-        other_stuff = re.replace(r"!\[(.*?)\]\((.*?)\)", node.text)
-        print(other_stuff)
+        if not list_of_tuples:
+            list_of_textnodes.append(node)
+        else:
+            temp_text = node.text
+            for i in range(len(list_of_tuples)):
+                image_alt, image_link = list_of_tuples[i][0], list_of_tuples[i][1]
+                splitted = temp_text.split(f"![{image_alt}]({image_link})", 1)
+                list_of_textnodes.append(TextNode(splitted[0], text_type_text))
+                list_of_textnodes.append(TextNode(image_alt, text_type_image, image_link))
+                temp_text = splitted[1]
+            list_of_textnodes.append(TextNode(splitted[1], text_type_text))
     return list_of_textnodes
 
-def split_nodes_link(old_nodes: TextNode) -> List[TextNode]:
+def split_nodes_link(old_nodes: List[TextNode]) -> List[TextNode]:
     """
     Args: List of TextNodes
     Return: List of Textnodes
     """
-    return
+    list_of_textnodes = []
+    for node in old_nodes:
+        list_of_tuples = extract_markdown_links(node.text)
+        if not list_of_tuples:
+            list_of_textnodes.append(node)
+        else:
+            temp_text = node.text
+            for i in range(len(list_of_tuples)):
+                hyper_text, hyper_link = list_of_tuples[i][0], list_of_tuples[i][1]
+                splitted = temp_text.split(f"[{hyper_text}]({hyper_link})", 1)
+                list_of_textnodes.append(TextNode(splitted[0], text_type_text))
+                list_of_textnodes.append(TextNode(hyper_text, text_type_image, hyper_link))
+                temp_text = splitted[1]
+            list_of_textnodes.append(TextNode(splitted[1], text_type_text))
+    return list_of_textnodes
+
+def text_to_textnodes(text: str) -> List[TextNode]:
+    """
+    arg: a string of text
+    Combine all the split functions into one. This will split a bunch of markdown text
+    return: a list of textnodes
+    """
+    node = TextNode(text, text_type_text)
+    list_of_textnodes = split_nodes_image([node])
+    list_of_textnodes = split_nodes_link(list_of_textnodes)
+    list_of_textnodes = split_nodes_delimiter(list_of_textnodes, '**', text_type_bold)
+    return list_of_textnodes
