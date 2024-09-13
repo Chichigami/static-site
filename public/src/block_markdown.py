@@ -22,21 +22,23 @@ def block_to_block_type(single_block: str) -> str:
     return: a str representing the text_type of block
     """
     validator = []
-    for sentence in single_block.split("\n"):
-        match sentence:
-            case heading if sentence.startswith(r'#{1,6}\s'):
+    sentences = single_block.split('\n')
+    if re.match(r'^`{3}.*?', sentences[0]) and re.match(r'.*?`{3}$', sentences[len(sentences)-1]):
+        return "code"
+    
+    for i in range(0, len(sentences)):
+        match sentences[i]:
+            case heading if re.match(r'^#{1,6}\s*?', sentences[i]):
                 validator.append("heading")
-            case code if sentence.startswith(r'`{3}') and sentence.endswith('`{3}'):
-                validator.append("code")
-            case quote if sentence.startswith(r'>\s'):
+            case quote if re.match(r'^\s*>\s', sentences[i]):
                 validator.append("quote")
-            case unorder if sentence.startswith(r'(\*|\-)\s'):
+            case unorder if re.match(r'^\s*(\*|\-)\s', sentences[i]):
                 validator.append("unordered_list")
-            case order if sentence.startswith(r'[0-9].\s'):
+            case order if re.match(r'^\s*[0-9]+\.\s', sentences[i]) and int(re.findall(r'[0-9]+', sentences[i])[0]) == i+1: #if line starts w/ 'number. ' and that number == 1,2,...,n
                 validator.append("ordered_list")
-            case _:
-                validator.append("paragraph")
-    print(validator)
-    if len(set(validator)) != 1:
+            case _: #if a line is ever not one of the types
+                return "paragraph"
+
+    if len(set(validator)) != 1: #if the list of types has more than 1 type then
         return "paragraph"
     return validator[0]

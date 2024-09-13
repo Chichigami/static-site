@@ -37,5 +37,76 @@ class TestBlockIdentifier(unittest.TestCase):
         expected = 'unordered_list'
         self.assertEqual(actual, expected)
 
+    def test_code_block(self):
+        text = '```hello world\n foobar\n code block```'
+        actual = block_to_block_type(text)
+        expected = 'code'
+        self.assertEqual(actual, expected)
+    
+    def test_quote_block(self):
+        text =  "> hello\n" \
+                "> world\n" \
+                "> foo\n" \
+                "> bar\n" \
+                "> foobar "
+        actual = block_to_block_type(text)
+        expected = 'quote'
+        self.assertEqual(actual, expected)
+
+    def test_heading_block(self):
+        text =  "# hello\n" \
+                "## world\n" \
+                "### foo\n" \
+                "#### bar\n" \
+                "##### foobar \n" \
+                "###### six"
+        actual = block_to_block_type(text)
+        expected = 'heading'
+        self.assertEqual(actual, expected)
+
+    def test_unordered_block(self):
+        text =  "- hello\n" \
+                "* world\n" \
+                "- foo\n" \
+                "* bar\n" \
+                "- foobar \n" \
+                "* ten"
+        actual = block_to_block_type(text)
+        expected = 'unordered_list'
+        self.assertEqual(actual, expected)
+
+    def test_ordered_block(self):
+        text =  "1. hello\n" \
+                "2. world\n" \
+                "3. foo\n" \
+                "4. bar\n" \
+                "5. foobar \n" \
+                "6. ten"
+        actual = block_to_block_type(text)
+        expected = 'ordered_list'
+        self.assertEqual(actual, expected)
+
+    def test_out_of__order_ordered_block(self):
+        text =  "1. hello\n" \
+                "10. world\n" \
+                "3. foo\n" \
+                "4. bar\n" \
+                "5. foobar \n" \
+                "6. ten"
+        actual = block_to_block_type(text)
+        expected = 'paragraph'
+        self.assertEqual(actual, expected)
+
+    def test_out_mixed_blocks(self):
+        text =  "> hello\n" \
+                "* world\n" \
+                "- foo\n" \
+                "> bar\n" \
+                "> foobar \n" \
+                "> ten"
+        actual = block_to_block_type(text)
+        expected = 'paragraph'
+        self.assertEqual(actual, expected)
+
 if __name__ == "__main__":
     unittest.main()
