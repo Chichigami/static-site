@@ -108,5 +108,21 @@ class TestBlockIdentifier(unittest.TestCase):
         expected = 'paragraph'
         self.assertEqual(actual, expected)
 
+
+class TestMarkdownToHTMLNode(unittest.TestCase):
+    def test_code(self):
+        text = "```\n" \
+            "def hello_world()\n" \
+            "   print('hello world')"
+        actual = markdown_to_html_node(text)
+        expected = HTMLNode('div', None, [
+            HTMLNode('pre', None, [
+                HTMLNode('code', None, [
+                    HTMLNode(None, 'def hello_world()', None, None),
+                    HTMLNode(None, "   print('hello world')", None, None)
+                ], None)
+            ], None)
+        ], None)
+
 if __name__ == "__main__":
     unittest.main()

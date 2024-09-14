@@ -42,3 +42,39 @@ def block_to_block_type(single_block: str) -> str:
     if len(set(validator)) != 1: #if the list of types has more than 1 type then
         return "paragraph"
     return validator[0]
+
+def markdown_to_html_node(document: str) -> HTMLNode:
+    """
+    arg: multiple blocks of string
+    return: single htmlnode
+    """
+    node_list = []
+    for block in markdown_to_blocks(document):
+        match block_to_block_type(block):
+            case "heading":
+                heading_count = block.split()[0].count('#')
+                node_list.append(HTMLNode(f'h{heading_count}', None, None))
+            case "quote":
+                node_list.append(HTMLNode('blockquote', block, None, None))
+            case "code":
+                node_list.append(HTMLNode('pre', None, 
+                         HTMLNode('code', None, text_to_children(block), None), 
+                                  None))
+            case "unordered_list":
+                node_list.append(HTMLNode('ul', block, text_to_children(block), None))
+            case "ordered_list":
+                node_list.append(HTMLNode('ol', block, None, None))
+            case "paragraph":
+                node_list.append(HTMLNode('p', block, None, None))
+            case _:
+                raise Exception("markdown_to_html_gone_wrong")
+            
+
+    single_parent = HTMLNode('div', None, node_list, None)
+    return single_parent
+
+def text_to_children(texts: str) -> List[HTMLNode]:
+    list_of_htmlnodes = []
+    for text in texts:
+        list_of_htmlnodes.append(HTMLNode(None, text, None, None))
+    return list_of_htmlnodes
