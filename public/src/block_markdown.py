@@ -50,22 +50,37 @@ def markdown_to_html_node(document: str) -> HTMLNode:
     """
     node_list = []
     for block in markdown_to_blocks(document):
+        print(f"\nblock: \n{block}")
         match block_to_block_type(block):
             case "heading":
                 heading_count = block.split()[0].count('#')
-                node_list.append(HTMLNode(f'h{heading_count}', None, None))
+                node_list.append(HTMLNode(f'h{heading_count}', None, 
+                                          text_to_children(re.sub(r'^#{1,6}\s', '', block, flags=re.MULTILINE)), 
+                                          None))
             case "quote":
-                node_list.append(HTMLNode('blockquote', block, None, None))
-            case "code":
+                node_list.append(HTMLNode('blockquote', None, 
+                                          text_to_children(re.sub(r'^>\s', '', block, flags=re.MULTILINE)), 
+                                          None))
+            case "code":    
                 node_list.append(HTMLNode('pre', None, 
-                         HTMLNode('code', None, text_to_children(block), None), 
+                         [HTMLNode('code', None, 
+                                   text_to_children(block[3:-3]), 
+                                   None)], 
                                   None))
             case "unordered_list":
-                node_list.append(HTMLNode('ul', block, text_to_children(block), None))
+                node_list.append(HTMLNode('ul', None, 
+                                          [HTMLNode('li', None, 
+                                                    text_to_children(text), None) for text in block.split('\n')], 
+                             None))
             case "ordered_list":
-                node_list.append(HTMLNode('ol', block, None, None))
+                node_list.append(HTMLNode('ol', None, 
+                                          [HTMLNode('li', None, 
+                                                    text_to_children(text), None) for text in block.split('\n')], 
+                             None))
             case "paragraph":
-                node_list.append(HTMLNode('p', block, None, None))
+                node_list.append(HTMLNode('p', None, 
+                                          text_to_children(block), 
+                                          None))
             case _:
                 raise Exception("markdown_to_html_gone_wrong")
             
@@ -75,6 +90,7 @@ def markdown_to_html_node(document: str) -> HTMLNode:
 
 def text_to_children(texts: str) -> List[HTMLNode]:
     list_of_htmlnodes = []
-    for text in texts:
-        list_of_htmlnodes.append(HTMLNode(None, text, None, None))
+    for text in texts.split('\n'):
+        if text:
+            list_of_htmlnodes.append(HTMLNode(None, text, None, None))
     return list_of_htmlnodes

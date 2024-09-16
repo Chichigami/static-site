@@ -3,7 +3,7 @@ import unittest
 from node_conversions import *
 from block_markdown import *
 from textnode import *
-from htmlnode import LeafNode
+from htmlnode import *
 
 class TestSplitBlockMarkdown(unittest.TestCase):
     def test_default(self):
@@ -111,18 +111,59 @@ class TestBlockIdentifier(unittest.TestCase):
 
 class TestMarkdownToHTMLNode(unittest.TestCase):
     def test_code(self):
-        text = "```\n" \
-            "def hello_world()\n" \
-            "   print('hello world')"
+        text =  "```\n" \
+                "def hello_world():\n" \
+                "   print('hello world')\n" \
+                "```"
         actual = markdown_to_html_node(text)
         expected = HTMLNode('div', None, [
             HTMLNode('pre', None, [
                 HTMLNode('code', None, [
-                    HTMLNode(None, 'def hello_world()', None, None),
+                    HTMLNode(None, 'def hello_world():', None, None),
                     HTMLNode(None, "   print('hello world')", None, None)
                 ], None)
             ], None)
         ], None)
+        self.assertEqual(block_to_block_type(text), "code")
+        self.assertEqual(actual, expected)
+    
+    def test_quotes(self):
+        text =  "> some profound provereb\n" \
+                "> confucious says something idk\n"\
+                "> -author's name"
+        actual = markdown_to_html_node(text)
+        expected = HTMLNode('div', None, [
+            HTMLNode('blockquote', None, [
+                HTMLNode(None, 'some profound provereb', None, None),
+                HTMLNode(None, 'confucious says something idk', None, None),
+                HTMLNode(None, '-author\'s name', None, None),
+            ], None)
+        ], None)
+        self.assertEqual(block_to_block_type(text), 'quote')
+        self.assertEqual(actual, expected)
 
+    def test_ol(self):
+        text =  "1. some profound provereb\n" \
+                "2. confucious says something idk\n"\
+                "3. author's name"
+        actual = markdown_to_html_node(text)
+        expected = HTMLNode('div', None, [
+            HTMLNode('ol', None, [
+                HTMLNode('li', None, [HTMLNode(None, '1. some profound provereb', None, None),], None),
+                HTMLNode('li', None, [HTMLNode(None, '2. confucious says something idk', None, None),], None),
+                HTMLNode('li', None, [HTMLNode(None, '3. author\'s name', None, None),], None)
+            ], None)
+        ], None)
+        self.assertEqual(block_to_block_type(text), 'ordered_list')
+        print(actual)
+        self.assertEqual(actual, expected)
+
+    def test_giga_block(self):
+        text = ""
+        actual = ""
+        expected = ""
+        self.assertEqual(actual, expected)
+
+    
 if __name__ == "__main__":
     unittest.main()

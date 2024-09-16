@@ -1,7 +1,7 @@
-from typing import Self
+from typing import Self, List
 
 class HTMLNode():
-    def __init__(self, tag: str = None, value: str = None, children: Self = None, props: dict = None):
+    def __init__(self, tag: str = None, value: str = None, children: List[Self] = None, props: dict = None):
         self.tag = tag
         self.value = value
         self.children = children
