@@ -50,7 +50,6 @@ def markdown_to_html_node(document: str) -> HTMLNode:
     """
     node_list = []
     for block in markdown_to_blocks(document):
-        print(f"\nblock: \n{block}")
         match block_to_block_type(block):
             case "heading":
                 heading_count = block.split()[0].count('#')
@@ -70,12 +69,14 @@ def markdown_to_html_node(document: str) -> HTMLNode:
             case "unordered_list":
                 node_list.append(HTMLNode('ul', None, 
                                           [HTMLNode('li', None, 
-                                                    text_to_children(text), None) for text in block.split('\n')], 
-                             None))
+                                                    text_to_children(re.sub(r'^(\*|\-)\s', '', text))) for text in block.split('\n') if text.strip()
+                                                    ]
+                                          ))
             case "ordered_list":
                 node_list.append(HTMLNode('ol', None, 
                                           [HTMLNode('li', None, 
-                                                    text_to_children(text), None) for text in block.split('\n')], 
+                                                    text_to_children(text)) for text in block.split('\n') if text.strip()
+                                                    ], 
                              None))
             case "paragraph":
                 node_list.append(HTMLNode('p', None, 

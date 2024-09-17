@@ -155,14 +155,47 @@ class TestMarkdownToHTMLNode(unittest.TestCase):
             ], None)
         ], None)
         self.assertEqual(block_to_block_type(text), 'ordered_list')
-        print(actual)
         self.assertEqual(actual, expected)
 
     def test_giga_block(self):
-        text = ""
-        actual = ""
-        expected = ""
-        self.assertEqual(actual, expected)
+        text =  "## Big ass heading\n\n" \
+                "> iOS 18 release\n" \
+                "> -Gary Feng\n\n" \
+                "```\n" \
+                "code block\n" \
+                "print('foobar')\n" \
+                "```\n\n"\
+                "1. buy new shaver\n\n" \
+                "- Oranges"
+        actual = markdown_to_html_node(text)
+        expected = HTMLNode('div', None, [
+            HTMLNode('h2', None, [
+                HTMLNode(None, "Big ass heading", None, None),
+            ]),
+            HTMLNode('blockquote', None, [
+                HTMLNode(None, 'iOS 18 release', None, None),
+                HTMLNode(None, "-Gary Feng", None, None),
+            ]),
+            HTMLNode('pre', None, [
+                HTMLNode('code', None, [
+                    HTMLNode(None, 'code block', None, None),
+                    HTMLNode(None, "print('foobar')", None, None),
+                ]),
+            ]),
+            HTMLNode('ol', None, [
+                HTMLNode('li', None, [
+                    HTMLNode(None, '1. buy new shaver', None, None),
+                ]),
+            ]),
+            HTMLNode('ul', None, [
+                HTMLNode('li', None, [
+                    HTMLNode(None, 'Oranges', None, None)
+                ]),
+            ]),
+        ])
+
+        for i, (act_child, exp_child) in enumerate(zip(actual.children, expected.children)):
+            self.assertEqual(act_child, exp_child)
 
     
 if __name__ == "__main__":
