@@ -16,7 +16,6 @@ def main():
     paths_to_visit = ['static/']
     while paths_to_visit:
         dirs = paths_to_visit.pop()
-        print(dirs)
         for dir in os.listdir(dirs):
             if os.path.isdir(f"{dirs}/{dir}"):
                 paths_to_visit.append(os.path.join(dirs, dir))
@@ -24,6 +23,7 @@ def main():
             else:
                 copy2(f'{dirs}/{dir}', f'{re.sub(r'^(static/)', 'public/', dirs)}/{dir}')
 
+    
 
 if __name__ == "__main__":
     main()
