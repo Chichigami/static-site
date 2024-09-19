@@ -1,6 +1,7 @@
 import os
 from shutil import rmtree, copy2
 import re
+from extract_markdown import generate_page
 
 
 def main():
@@ -23,6 +24,7 @@ def main():
             else:
                 copy2(f'{dirs}/{dir}', f'{re.sub(r'^(static/)', 'public/', dirs)}/{dir}')
 
+    generate_page('content/index.md', 'template.html', 'public/index.html')
     
 
 if __name__ == "__main__":
