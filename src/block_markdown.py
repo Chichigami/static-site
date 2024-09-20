@@ -75,7 +75,7 @@ def markdown_to_html_node(document: str) -> ParentNode:
             case "ordered_list":
                 node_list.append(ParentNode('ol',
                                           [ParentNode('li',
-                                                    text_to_children(text)) for text in block.split('\n') if text.strip()
+                                                    text_to_children(re.sub(r'^[0-9].\s', '',text))) for text in block.split('\n') if text.strip()
                                                     ], 
                              ))
             case "paragraph":
