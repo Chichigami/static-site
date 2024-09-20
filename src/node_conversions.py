@@ -1,9 +1,26 @@
 import re
-
 from textnode import *
 from htmlnode import *
 from typing import List
 
+
+def text_to_textnodes(text: str) -> List[TextNode]:
+    """
+    arg: a string of text
+    Combine all the split functions into one. This will split a bunch of markdown text
+    return: a list of textnodes
+    """
+    list_of_nodes = [TextNode(text, text_type_text)]
+    if extract_markdown_images(text):
+        list_of_nodes = split_nodes_image(list_of_nodes)
+    if extract_markdown_links(text):
+        list_of_nodes = split_nodes_link(list_of_nodes)
+
+    list_of_nodes = split_nodes_delimiter(list_of_nodes, "**", text_type_bold)
+    list_of_nodes = split_nodes_delimiter(list_of_nodes, "*", text_type_italic)
+    list_of_nodes = split_nodes_delimiter(list_of_nodes, "`", text_type_code)
+
+    return list_of_nodes
 
 def text_node_to_html_node(text_node: TextNode) -> LeafNode:
     """
@@ -57,22 +74,6 @@ def split_nodes_delimiter(old_nodes: List[TextNode], delimiter: str, text_type) 
                
     return list_of_textnodes
 
-def extract_markdown_images(text: str) -> List[tuple]:
-    """
-    Arg: string of text
-    finds all markdown images
-    return: list of tuple of string and url link
-    """
-    return re.findall(r"!\[(.*?)\]\((.*?)\)", text)
-
-def extract_markdown_links(text: str) -> List[tuple]:
-    """
-    Arg: string of text
-    finds all markdown links
-    return: list of tuple of string and url link
-    """
-    return re.findall(r"(?<!!)\[(.*?)\]\((.*?)\)", text)
-
 def split_nodes_image(old_nodes: List[TextNode]) -> List[TextNode]:
     """
     Args: List of TextNodes with image alt and links
@@ -118,20 +119,19 @@ def split_nodes_link(old_nodes: List[TextNode]) -> List[TextNode]:
                 list_of_textnodes.append(TextNode(splitted[1], text_type_text))
     return list_of_textnodes
 
-def text_to_textnodes(text: str) -> List[TextNode]:
-    """
-    arg: a string of text
-    Combine all the split functions into one. This will split a bunch of markdown text
-    return: a list of textnodes
-    """
-    list_of_nodes = [TextNode(text, text_type_text)]
-    if extract_markdown_images(text):
-        list_of_nodes = split_nodes_image(list_of_nodes)
-    if extract_markdown_links(text):
-        list_of_nodes = split_nodes_link(list_of_nodes)
 
-    list_of_nodes = split_nodes_delimiter(list_of_nodes, "**", text_type_bold)
-    list_of_nodes = split_nodes_delimiter(list_of_nodes, "*", text_type_italic)
-    list_of_nodes = split_nodes_delimiter(list_of_nodes, "`", text_type_code)
+def extract_markdown_images(text: str) -> List[tuple]:
+    """
+    Arg: string of text
+    finds all markdown images
+    return: list of tuple of string and url link
+    """
+    return re.findall(r"!\[(.*?)\]\((.*?)\)", text)
 
-    return list_of_nodes
+def extract_markdown_links(text: str) -> List[tuple]:
+    """
+    Arg: string of text
+    finds all markdown links
+    return: list of tuple of string and url link
+    """
+    return re.findall(r"(?<!!)\[(.*?)\]\((.*?)\)", text)

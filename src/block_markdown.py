@@ -1,7 +1,7 @@
 import re
-
 from textnode import *
-from htmlnode import *
+from htmlnode import LeafNode, ParentNode
+from node_conversions import text_node_to_html_node, text_to_textnodes
 from typing import List
 
 def markdown_to_blocks(document: str) -> List[str]:
@@ -54,18 +54,18 @@ def markdown_to_html_node(document: str) -> ParentNode:
             case "heading":
                 heading_count = block.split()[0].count('#')
                 node_list.append(ParentNode(f'h{heading_count}', 
-                                          text_to_children(re.sub(r'^#{1,6}\s', '', block, flags=re.MULTILINE)), 
-                                          None))
+                                          text_to_children(re.sub(r'^#{1,6}\s', '', block, flags=re.MULTILINE))
+                                          ))
             case "quote":
                 node_list.append(ParentNode('blockquote', 
-                                          text_to_children(re.sub(r'^>\s', '', block, flags=re.MULTILINE)), 
-                                          None))
+                                          text_to_children(re.sub(r'^>\s', '', block, flags=re.MULTILINE)) 
+                                          ))
             case "code":    
                 node_list.append(ParentNode('pre', 
                          [ParentNode('code', 
-                                   text_to_children(block[3:-3]), 
-                                   None)], 
-                                  None))
+                                   text_to_children(block[3:-3])
+                                   )], 
+                                  ))
             case "unordered_list":
                 node_list.append(ParentNode('ul',
                                           [ParentNode('li', 
@@ -77,21 +77,19 @@ def markdown_to_html_node(document: str) -> ParentNode:
                                           [ParentNode('li',
                                                     text_to_children(text)) for text in block.split('\n') if text.strip()
                                                     ], 
-                             None))
+                             ))
             case "paragraph":
                 node_list.append(ParentNode('p', 
-                                          text_to_children(block), 
-                                          None))
+                                          text_to_children(block) 
+                                          ))
             case _:
                 raise Exception("markdown_to_html_gone_wrong")
-            
-
-    single_parent = ParentNode('div', node_list, None)
-    return single_parent
+        
+    return ParentNode('div', node_list)
 
 def text_to_children(texts: str) -> List[LeafNode]:
-    list_of_htmlnodes = []
-    for text in texts.split('\n'):
-        if text:
-            list_of_htmlnodes.append(LeafNode(None, text))
-    return list_of_htmlnodes
+    children = []
+    textnodes = text_to_textnodes(texts)
+    for textnode in textnodes:
+        children.append(text_node_to_html_node(textnode))
+    return children

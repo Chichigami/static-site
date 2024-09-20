@@ -215,19 +215,9 @@ class TestSplitTextNodeLinks(unittest.TestCase):
 class TestUltimateSplit(unittest.TestCase):
     def test_default(self):
         text = "This is **text** with an *italic* word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
-        actual = text_to_textnodes(text)
-        expected = [
-            TextNode("This is ", text_type_text),
-            TextNode("text", text_type_bold),
-            TextNode(" with an ", text_type_text),
-            TextNode("italic", text_type_italic),
-            TextNode(" word and a ", text_type_text),
-            TextNode("code block", text_type_code),
-            TextNode(" and an ", text_type_text),
-            TextNode("obi wan image", text_type_image, "https://i.imgur.com/fJRm4Vk.jpeg"),
-            TextNode(" and a ", text_type_text),
-            TextNode("link", text_type_link, "https://boot.dev"),
-        ]
+        temp = text_to_textnodes(text)
+        actual = ''.join([text_node_to_html_node(nodes).to_html() for nodes in temp])
+        expected = 'This is <b>text</b> with an <i>italic</i> word and a <code>code block</code> and an <img src="https://i.imgur.com/fJRm4Vk.jpeg" alt="obi wan image"></img> and a <a href="https://boot.dev">link</a>'
         self.assertEqual(actual, expected)
 
 

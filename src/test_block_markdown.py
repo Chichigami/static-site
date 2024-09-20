@@ -111,92 +111,79 @@ class TestBlockIdentifier(unittest.TestCase):
 
 class TestMarkdownToHTMLNode(unittest.TestCase):
     def test_code(self):
-        text =  "```\n" \
-                "def hello_world():\n" \
-                "   print('hello world')\n" \
-                "```"
-        actual = markdown_to_html_node(text)
-        expected = HTMLNode('div', None, [
-            HTMLNode('pre', None, [
-                HTMLNode('code', None, [
-                    HTMLNode(None, 'def hello_world():', None, None),
-                    HTMLNode(None, "   print('hello world')", None, None)
-                ], None)
-            ], None)
-        ], None)
-        self.assertEqual(block_to_block_type(text), "code")
+        text =  """
+```
+def hello_world():
+    print("hello world")
+```
+"""
+        actual = markdown_to_html_node(text).to_html()
+        expected = '<div><pre><code>\ndef hello_world():\n    print("hello world")\n</code></pre></div>'
         self.assertEqual(actual, expected)
     
     def test_quotes(self):
-        text =  "> some profound provereb\n" \
-                "> confucious says something idk\n"\
-                "> -author's name"
-        actual = markdown_to_html_node(text)
-        expected = HTMLNode('div', None, [
-            HTMLNode('blockquote', None, [
-                HTMLNode(None, 'some profound provereb', None, None),
-                HTMLNode(None, 'confucious says something idk', None, None),
-                HTMLNode(None, '-author\'s name', None, None),
-            ], None)
-        ], None)
-        self.assertEqual(block_to_block_type(text), 'quote')
+        text =  """
+> some profound provereb
+> confucious says something idk
+> -author's name
+"""
+        actual = markdown_to_html_node(text).to_html()
+        expected = "<div><blockquote>some profound provereb\nconfucious says something idk\n-author's name</blockquote></div>"
         self.assertEqual(actual, expected)
 
     def test_ol(self):
-        text =  "1. some profound provereb\n" \
-                "2. confucious says something idk\n"\
-                "3. author's name"
-        actual = markdown_to_html_node(text)
-        expected = HTMLNode('div', None, [
-            HTMLNode('ol', None, [
-                HTMLNode('li', None, [HTMLNode(None, '1. some profound provereb', None, None),], None),
-                HTMLNode('li', None, [HTMLNode(None, '2. confucious says something idk', None, None),], None),
-                HTMLNode('li', None, [HTMLNode(None, '3. author\'s name', None, None),], None)
-            ], None)
-        ], None)
-        self.assertEqual(block_to_block_type(text), 'ordered_list')
+        text =  """
+1. some profound proverb
+2. confucious says something idk
+3. author's name
+"""
+        actual = markdown_to_html_node(text).to_html()
+        expected = "<div><ol><li>1. some profound proverb</li><li>2. confucious says something idk</li><li>3. author's name</li></ol></div>"
         self.assertEqual(actual, expected)
 
     def test_giga_block(self):
-        text =  "## Big ass heading\n\n" \
-                "> iOS 18 release\n" \
-                "> -Gary Feng\n\n" \
-                "```\n" \
-                "code block\n" \
-                "print('foobar')\n" \
-                "```\n\n"\
-                "1. buy new shaver\n\n" \
-                "- Oranges"
-        actual = markdown_to_html_node(text)
-        expected = HTMLNode('div', None, [
-            HTMLNode('h2', None, [
-                HTMLNode(None, "Big ass heading", None, None),
-            ]),
-            HTMLNode('blockquote', None, [
-                HTMLNode(None, 'iOS 18 release', None, None),
-                HTMLNode(None, "-Gary Feng", None, None),
-            ]),
-            HTMLNode('pre', None, [
-                HTMLNode('code', None, [
-                    HTMLNode(None, 'code block', None, None),
-                    HTMLNode(None, "print('foobar')", None, None),
-                ]),
-            ]),
-            HTMLNode('ol', None, [
-                HTMLNode('li', None, [
-                    HTMLNode(None, '1. buy new shaver', None, None),
-                ]),
-            ]),
-            HTMLNode('ul', None, [
-                HTMLNode('li', None, [
-                    HTMLNode(None, 'Oranges', None, None)
-                ]),
-            ]),
-        ])
+        text =  """
+## Big ass heading
 
-        for i, (act_child, exp_child) in enumerate(zip(actual.children, expected.children)):
-            self.assertEqual(act_child, exp_child)
+> iOS 18 release
+> -Gary Feng
 
-    
+```
+code block
+print('foobar')
+```
+
+1. buy new shaver
+
+- Oranges
+
+paragraph `code here as well?` here
+"""
+        actual = markdown_to_html_node(text).to_html()
+        expected = \
+        "<div><h2>Big ass heading</h2><blockquote>iOS 18 release\n-Gary Feng</blockquote><pre><code>\ncode block\nprint('foobar')\n</code></pre><ol><li>1. buy new shaver</li></ol><ul><li>Oranges</li></ul><p>paragraph <code>code here as well?</code> here</p></div>"
+        self.assertEqual(actual, expected)
+
+    def test_other(self):
+        md = """
+> block quote
+> kekw
+
+`code line`
+
+```
+code block
+```
+
+1. ol ol ol
+2. abc
+
+- ul ul ul
+"""
+        actual = markdown_to_html_node(md).to_html()
+        expected = '<div><blockquote>block quote\nkekw</blockquote><p><code>code line</code></p><pre><code>\ncode block\n</code></pre><ol><li>1. ol ol ol</li><li>2. abc</li></ol><ul><li>ul ul ul</li></ul></div>'
+        self.assertEqual(actual, expected)
+
+
 if __name__ == "__main__":
     unittest.main()
