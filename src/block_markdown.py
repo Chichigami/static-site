@@ -63,7 +63,7 @@ def markdown_to_html_node(document: str) -> ParentNode:
             case "code":    
                 node_list.append(ParentNode('pre', 
                          [ParentNode('code', 
-                                   text_to_children(block[3:-3])
+                                   text_to_children(block[4:-3])
                                    )], 
                                   ))
             case "unordered_list":

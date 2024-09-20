@@ -31,6 +31,5 @@ def generate_page(from_path, template_path, dest_path):
     template_file = template_file.replace('{{ Title }}', title)
     template_file = template_file.replace('{{ Content }}', html_string)
 
-    os.makedirs(dest_path)
     open(dest_path, 'w').write(template_file)
     
