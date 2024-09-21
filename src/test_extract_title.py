@@ -1,6 +1,6 @@
 import unittest
 
-from extract_markdown import extract_title
+from generate_page import extract_title
 
 class TestExtractTitle(unittest.TestCase):
     def test_default(self):

@@ -1,7 +1,6 @@
-import os
+import os, re
 from shutil import rmtree, copy2
-import re
-from extract_markdown import generate_page, generate_pages_recursive
+from generate_page import generate_pages_recursive
 
 
 def main():

@@ -118,7 +118,7 @@ def hello_world():
 ```
 """
         actual = markdown_to_html_node(text).to_html()
-        expected = '<div><pre><code>\ndef hello_world():\n    print("hello world")\n</code></pre></div>'
+        expected = '<div><pre><code>def hello_world():\n    print("hello world")\n</code></pre></div>'
         self.assertEqual(actual, expected)
     
     def test_quotes(self):
@@ -138,7 +138,7 @@ def hello_world():
 3. author's name
 """
         actual = markdown_to_html_node(text).to_html()
-        expected = "<div><ol><li>1. some profound proverb</li><li>2. confucious says something idk</li><li>3. author's name</li></ol></div>"
+        expected = "<div><ol><li>some profound proverb</li><li>confucious says something idk</li><li>author's name</li></ol></div>"
         self.assertEqual(actual, expected)
 
     def test_giga_block(self):
@@ -161,7 +161,7 @@ paragraph `code here as well?` here
 """
         actual = markdown_to_html_node(text).to_html()
         expected = \
-        "<div><h2>Big ass heading</h2><blockquote>iOS 18 release\n-Gary Feng</blockquote><pre><code>\ncode block\nprint('foobar')\n</code></pre><ol><li>1. buy new shaver</li></ol><ul><li>Oranges</li></ul><p>paragraph <code>code here as well?</code> here</p></div>"
+        "<div><h2>Big ass heading</h2><blockquote>iOS 18 release\n-Gary Feng</blockquote><pre><code>code block\nprint('foobar')\n</code></pre><ol><li>buy new shaver</li></ol><ul><li>Oranges</li></ul><p>paragraph <code>code here as well?</code> here</p></div>"
         self.assertEqual(actual, expected)
 
     def test_other(self):
@@ -181,7 +181,7 @@ code block
 - ul ul ul
 """
         actual = markdown_to_html_node(md).to_html()
-        expected = '<div><blockquote>block quote\nkekw</blockquote><p><code>code line</code></p><pre><code>\ncode block\n</code></pre><ol><li>1. ol ol ol</li><li>2. abc</li></ol><ul><li>ul ul ul</li></ul></div>'
+        expected = '<div><blockquote>block quote\nkekw</blockquote><p><code>code line</code></p><pre><code>code block\n</code></pre><ol><li>ol ol ol</li><li>abc</li></ol><ul><li>ul ul ul</li></ul></div>'
         self.assertEqual(actual, expected)
 
 
