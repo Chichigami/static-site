@@ -1,4 +1,4 @@
-# Markdown to HTML project
+# Markdown to HTML static site generator
 
 Generic Static Site Generator.
 
