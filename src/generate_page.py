@@ -11,7 +11,7 @@ def extract_title(markdown):
     return title
     
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, base_path):
     """
     args: 3 different file paths
     read the markdown
@@ -29,10 +29,12 @@ def generate_page(from_path, template_path, dest_path):
     template_file = open(template_path, 'r').read()
     template_file = template_file.replace('{{ Title }}', title)
     template_file = template_file.replace('{{ Content }}', html_string)
+    template_file = template_file.replace('href="/', base_path)
+    template_file = template_file.replace('src="/', base_path)
 
     open(f'{dest_path}'.replace('md', 'html'), 'w').write(template_file)
 
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, base_path):
     paths_to_visit = [dir_path_content]
     while paths_to_visit:
         current_dir = paths_to_visit.pop()
@@ -45,5 +47,5 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
                 os.makedirs(dest_path, exist_ok=True)
             elif current.endswith('.md'):
                 dest_path = dest_path.replace('.md', '.html')
-                generate_page(current, template_path, dest_path)
+                generate_page(current, template_path, dest_path, base_path)
             
