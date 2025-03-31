@@ -123,12 +123,12 @@ def hello_world():
     
     def test_quotes(self):
         text =  """
-> some profound provereb
-> confucious says something idk
-> -author's name
+> "I am in fact a Hobbit in all but size."
+>
+> -- J.R.R. Tolkien
 """
         actual = markdown_to_html_node(text).to_html()
-        expected = "<div><blockquote>some profound provereb\nconfucious says something idk\n-author's name</blockquote></div>"
+        expected = '<div><blockquote>"I am in fact a Hobbit in all but size."\n\n-- J.R.R. Tolkien</blockquote></div>'
         self.assertEqual(actual, expected)
 
     def test_ol(self):

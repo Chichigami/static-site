@@ -9,7 +9,7 @@ def main():
         if os.path.exists('docs/'): #always removes the public folder before regenerating
             rmtree('docs/')
         os.mkdir('docs/')
-        copytree("static", "docs", dirs_exist_ok=True)
+        copytree("static", "docs/", dirs_exist_ok=True)
     except Exception as e:
         print(f"Failed to copy tree: {e}")
 

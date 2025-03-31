@@ -4,67 +4,86 @@ from htmlnode import LeafNode, ParentNode
 from node_conversions import text_node_to_html_node, text_to_textnodes
 from typing import List
 
+import re
+from typing import List
+
 def markdown_to_blocks(document: str) -> List[str]:
     """
-    arg: a string with multiple lines of text
-    return: a list of strings where each element is it's own block
+    Splits a Markdown document into blocks, preserving meaningful structure.
+
+    Args:
+        document (str): A string with multiple lines of text.
+    
+    Returns:
+        List[str]: A list of strings where each element is a separate block.
     """
-    splitted = document.split('\n\n')
-    blocks = []
-    for sentence in splitted:
-        if sentence: #checks if it's empty block
-            blocks.append(sentence.strip())
+    # Use regex to split on two or more consecutive newlines
+    blocks = re.split(r'\n\s*\n+', document.strip())
+
     return blocks
 
 def block_to_block_type(single_block: str) -> str:
     """
-    arg: a block of string
-    return: a str representing the text_type of block
-    """
-    validator = []
-    sentences = single_block.split('\n')
-    if re.match(r'^`{3}.*?', sentences[0]) and re.match(r'.*?`{3}$', sentences[len(sentences)-1]):
-        return "code"
+    Determines the type of a Markdown block.
     
-    for i in range(0, len(sentences)):
-        match sentences[i]:
-            case heading if re.match(r'^#{1,6}\s*?', sentences[i]):
+    Args:
+        single_block (str): A block of text.
+        
+    Returns:
+        str: The type of Markdown block (e.g., "heading", "quote", "paragraph").
+    """
+    sentences = single_block.split('\n')
+
+    # Check if the entire block consists of blockquote lines
+    if all(re.match(r'^>\s?', line) for line in sentences):
+        return "quote"
+
+    # Check if it's a fenced code block
+    if re.match(r'^`{3}.*?', sentences[0]) and re.match(r'.*?`{3}$', sentences[-1]):
+        return "code"
+
+    validator = []
+    for i, line in enumerate(sentences):
+        match line:
+            case heading if re.match(r'^#{1,6}\s+', line):
                 validator.append("heading")
-            case quote if re.match(r'^\s*>\s', sentences[i]):
-                validator.append("quote")
-            case unorder if re.match(r'^\s*(\*|\-)\s', sentences[i]):
+            case unorder if re.match(r'^\s*(\*|\-)\s', line):
                 validator.append("unordered_list")
-            case order if re.match(r'^\s*[0-9]+\.\s', sentences[i]) and int(re.findall(r'[0-9]+', sentences[i])[0]) == i+1: #if line starts w/ 'number. ' and that number == 1,2,...,n
+            case order if re.match(r'^\s*[0-9]+\.\s', line) and int(re.findall(r'[0-9]+', line)[0]) == i + 1:
                 validator.append("ordered_list")
-            case _: #if a line is ever not one of the types
+            case _:
                 return "paragraph"
 
-    if len(set(validator)) != 1: #if the list of types has more than 1 type then
-        return "paragraph"
-    return validator[0]
+    return validator[0] if len(set(validator)) == 1 else "paragraph"
+
 
 def markdown_to_html_node(document: str) -> ParentNode:
     """
-    arg: multiple blocks of string
-    return: single htmlnode
+    Converts a Markdown document into an HTML node structure.
+
+    Args:
+        document (str): The Markdown text.
+
+    Returns:
+        ParentNode: The root HTML node.
     """
     node_list = []
     for block in markdown_to_blocks(document):
-        match block_to_block_type(block):
+        block_type = block_to_block_type(block)
+
+        match block_type:
             case "heading":
                 heading_count = block.split()[0].count('#')
                 node_list.append(ParentNode(f'h{heading_count}', 
                                           text_to_children(re.sub(r'^#{1,6}\s', '', block, flags=re.MULTILINE))
                                           ))
             case "quote":
-                node_list.append(ParentNode('blockquote', 
-                                          text_to_children(re.sub(r'^>\s', '', block, flags=re.MULTILINE)) 
-                                          ))
-            case "code":    
+                # Remove the ">" from each line and join properly
+                quote_text = "\n".join([re.sub(r'^>\s?', '', line) for line in block.split('\n')])
+                node_list.append(ParentNode('blockquote', text_to_children(quote_text)))
+            case "code":
                 node_list.append(ParentNode('pre', 
-                         [ParentNode('code', 
-                                   text_to_children(block[4:-3])
-                                   )], 
+                         [ParentNode('code', text_to_children(block[4:-3]))], 
                                   ))
             case "unordered_list":
                 node_list.append(ParentNode('ul',
@@ -75,17 +94,16 @@ def markdown_to_html_node(document: str) -> ParentNode:
             case "ordered_list":
                 node_list.append(ParentNode('ol',
                                           [ParentNode('li',
-                                                    text_to_children(re.sub(r'^[0-9].\s', '',text))) for text in block.split('\n') if text.strip()
+                                                    text_to_children(re.sub(r'^[0-9]+\.\s', '', text))) for text in block.split('\n') if text.strip()
                                                     ], 
                              ))
             case "paragraph":
-                node_list.append(ParentNode('p', 
-                                          text_to_children(block) 
-                                          ))
+                node_list.append(ParentNode('p', text_to_children(block)))
             case _:
                 raise Exception("markdown_to_html_gone_wrong")
-        
+
     return ParentNode('div', node_list)
+
 
 def text_to_children(texts: str) -> List[LeafNode]:
     children = []
