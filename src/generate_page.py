@@ -1,5 +1,4 @@
-import re
-import os
+import re, os
 from block_markdown import *
 
 def extract_title(markdown):
@@ -32,16 +31,19 @@ def generate_page(from_path, template_path, dest_path):
     template_file = template_file.replace('{{ Content }}', html_string)
 
     open(f'{dest_path}'.replace('md', 'html'), 'w').write(template_file)
-    
+
 def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
     paths_to_visit = [dir_path_content]
     while paths_to_visit:
         current_dir = paths_to_visit.pop()
         for file_or_dir in os.listdir(current_dir):
             current = os.path.join(current_dir, file_or_dir)
+            relative_path = os.path.relpath(current, dir_path_content)
+            dest_path = os.path.join(dest_dir_path, relative_path)
             if os.path.isdir(current):
                 paths_to_visit.append(current)
-                os.mkdir(os.path.join(dest_dir_path, file_or_dir))
-            if os.path.splitext(file_or_dir)[1] == '.md':
-                generate_page(current, template_path, f'{re.sub(dir_path_content, dest_dir_path, current)}')
+                os.makedirs(dest_path, exist_ok=True)
+            elif current.endswith('.md'):
+                dest_path = dest_path.replace('.md', '.html')
+                generate_page(current, template_path, dest_path)
             
